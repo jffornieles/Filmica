@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.layout_error.*
 
 class TrendsFragment : Fragment() {
 
-    lateinit var listener: FilmsFragment.OnFilmClickLister
+    lateinit var listener: OnTrendClickLister
 
     val list: RecyclerView by lazy {
         listFilms.addItemDecoration(GridOffsetDecoration())
@@ -33,11 +33,11 @@ class TrendsFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if (context is FilmsFragment.OnFilmClickLister) {
+        if (context is OnTrendClickLister) {
             listener = context
         } else {
             throw IllegalArgumentException("The attached activity isn't implementing " +
-                    "${FilmsFragment.OnFilmClickLister::class.java.canonicalName}")
+                    "${OnTrendClickLister::class.java.canonicalName}")
         }
     }
 
@@ -90,6 +90,10 @@ class TrendsFragment : Fragment() {
         filmsProgress.visibility = View.VISIBLE
         error.visibility = View.INVISIBLE
         list.visibility = View.INVISIBLE
+    }
+
+    interface OnTrendClickLister {
+        fun onClick(film: Film)
     }
 
 }
