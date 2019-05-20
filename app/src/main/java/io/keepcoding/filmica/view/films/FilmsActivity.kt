@@ -9,11 +9,13 @@ import io.keepcoding.filmica.R
 import io.keepcoding.filmica.data.Film
 import io.keepcoding.filmica.view.detail.DetailActivity
 import io.keepcoding.filmica.view.detail.DetailFragment
+import io.keepcoding.filmica.view.trending.TrendsFragment
 import io.keepcoding.filmica.view.watchlist.WatchlistFragment
 import kotlinx.android.synthetic.main.activity_films.*
 
 const val TAG_FILM = "films"
 const val TAG_WATCHLIST = "watchlist"
+const val TAG_TRENDING = "trending"
 
 class FilmsActivity : AppCompatActivity(),
     FilmsFragment.OnFilmClickLister {
@@ -21,6 +23,7 @@ class FilmsActivity : AppCompatActivity(),
     private lateinit var filmsFragment: FilmsFragment
     private lateinit var watchlistFragment: WatchlistFragment
     private lateinit var activeFragment: Fragment
+    private lateinit var trendingFragment: TrendsFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +40,7 @@ class FilmsActivity : AppCompatActivity(),
             when (it.itemId) {
                 R.id.action_discover -> showMainFragment(filmsFragment)
                 R.id.action_watchlist -> showMainFragment(watchlistFragment)
+                R.id.action_trending -> showMainFragment(trendingFragment)
             }
 
             true
@@ -52,11 +56,14 @@ class FilmsActivity : AppCompatActivity(),
     private fun setupFragments() {
         filmsFragment = FilmsFragment()
         watchlistFragment = WatchlistFragment()
+        trendingFragment = TrendsFragment()
         activeFragment = filmsFragment
 
         supportFragmentManager.beginTransaction()
             .add(R.id.container, filmsFragment, TAG_FILM)
             .add(R.id.container, watchlistFragment, TAG_WATCHLIST)
+            .add(R.id.container, trendingFragment, TAG_TRENDING)
+            .hide(trendingFragment)
             .hide(watchlistFragment)
             .commit()
     }
@@ -65,13 +72,16 @@ class FilmsActivity : AppCompatActivity(),
         filmsFragment = supportFragmentManager.findFragmentByTag(TAG_FILM) as FilmsFragment
         watchlistFragment =
             supportFragmentManager.findFragmentByTag(TAG_WATCHLIST) as WatchlistFragment
+        trendingFragment = supportFragmentManager.findFragmentByTag(TAG_TRENDING) as TrendsFragment
 
         activeFragment =
-            if (tag == TAG_WATCHLIST)
-                watchlistFragment
-            else
-                filmsFragment
-
+            when (tag) {
+                TAG_WATCHLIST -> watchlistFragment
+                TAG_TRENDING -> trendingFragment
+                else -> {
+                    filmsFragment
+                }
+            }
     }
 
     private fun showMainFragment(fragment: Fragment) {

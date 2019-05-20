@@ -20,6 +20,15 @@ object ApiRoutes {
             .toString()
     }
 
+    fun trendingMoviesUrl(): String {
+        return getUriBuilder()
+            .appendPath("trending")
+            .appendPath("movie")
+            .appendPath("week")
+            .build()
+            .toString()
+    }
+
     private fun getUriBuilder(): Uri.Builder =
         Uri.Builder()
             .scheme("https")
