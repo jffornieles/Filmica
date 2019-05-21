@@ -2,6 +2,7 @@ package io.keepcoding.filmica.view.watchlist
 
 
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -55,6 +56,22 @@ class WatchlistFragment : Fragment() {
     private fun deleteFilm(film: Film, position: Int) {
         FilmsRepo.deleteFilm(context!!, film) {
             adapter.deleteFilm(position)
+            Snackbar.make(view!!, "Film eliminado de watchlist", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", { undoDelete(film, position) })
+                .show()
+        }
+    }
+
+    private fun undoDelete(film: Film, position: Int) {
+        FilmsRepo.saveFilm(context!!, film) {
+            FilmsRepo.getFilms(context!!) {
+                adapter.watchlist(film, position)
+                Snackbar.make(view!!, "Film añadido al watchlist", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO", {
+                        deleteFilm(film, position)
+                    }
+                    ).show()
+            }
         }
     }
 
