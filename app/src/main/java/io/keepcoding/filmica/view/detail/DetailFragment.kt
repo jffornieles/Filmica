@@ -5,11 +5,11 @@ import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.graphics.Palette
 import android.view.*
-import android.widget.Toast
 import com.squareup.picasso.Picasso
 import io.keepcoding.filmica.R
 import io.keepcoding.filmica.data.Film
@@ -87,10 +87,26 @@ class DetailFragment : Fragment() {
         }
 
         buttonAdd.setOnClickListener {
-            film?.let {
-                FilmsRepo.saveFilm(context!!, it) {
-                    Toast.makeText(context, "Añadido al watchlist", Toast.LENGTH_LONG).show()
-                }
+            addToWatchlist()
+        }
+    }
+
+    private fun addToWatchlist() {
+        film?.let {
+            FilmsRepo.saveFilm(context!!, it) {
+                Snackbar.make(view!!, "Añadido al watchlist", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO", { deleteToWatchlist() })
+                    .show()
+            }
+        }
+    }
+
+    private fun deleteToWatchlist() {
+        film?.let {
+            FilmsRepo.deleteFilm(context!!, it) {
+                Snackbar.make(view!!, "Borrado de watchlist", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO", { addToWatchlist() })
+                    .show()
             }
         }
     }

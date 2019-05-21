@@ -9,6 +9,7 @@ import io.keepcoding.filmica.R
 import io.keepcoding.filmica.data.Film
 import io.keepcoding.filmica.view.detail.DetailActivity
 import io.keepcoding.filmica.view.detail.DetailFragment
+import io.keepcoding.filmica.view.search.SearchFragment
 import io.keepcoding.filmica.view.trending.TrendsFragment
 import io.keepcoding.filmica.view.watchlist.WatchlistFragment
 import kotlinx.android.synthetic.main.activity_films.*
@@ -25,7 +26,7 @@ class FilmsActivity : AppCompatActivity(),
     private lateinit var watchlistFragment: WatchlistFragment
     private lateinit var activeFragment: Fragment
     private lateinit var trendingFragment: TrendsFragment
-    // private lateinit var searchFragment: SearchFragment
+    private lateinit var searchFragment: SearchFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +44,7 @@ class FilmsActivity : AppCompatActivity(),
                 R.id.action_discover -> showMainFragment(filmsFragment)
                 R.id.action_watchlist -> showMainFragment(watchlistFragment)
                 R.id.action_trending -> showMainFragment(trendingFragment)
-                // R.id.action_search -> showMainFragment(searchFragment)
+                R.id.action_search -> showMainFragment(searchFragment)
             }
 
             true
@@ -60,17 +61,17 @@ class FilmsActivity : AppCompatActivity(),
         filmsFragment = FilmsFragment()
         watchlistFragment = WatchlistFragment()
         trendingFragment = TrendsFragment()
-        // searchFragment = SearchFragment()
+        searchFragment = SearchFragment()
         activeFragment = filmsFragment
 
         supportFragmentManager.beginTransaction()
             .add(R.id.container, filmsFragment, TAG_FILM)
             .add(R.id.container, watchlistFragment, TAG_WATCHLIST)
-            // .add(R.id.container, searchFragment, TAG_SEARCH)
+            .add(R.id.container, searchFragment, TAG_SEARCH)
             .add(R.id.container, trendingFragment, TAG_TRENDING)
             .hide(trendingFragment)
             .hide(watchlistFragment)
-            // .hide(searchFragment)
+            .hide(searchFragment)
             .commit()
     }
 
@@ -78,13 +79,13 @@ class FilmsActivity : AppCompatActivity(),
         filmsFragment = supportFragmentManager.findFragmentByTag(TAG_FILM) as FilmsFragment
         watchlistFragment = supportFragmentManager.findFragmentByTag(TAG_WATCHLIST) as WatchlistFragment
         trendingFragment = supportFragmentManager.findFragmentByTag(TAG_TRENDING) as TrendsFragment
-        // searchFragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH) as SearchFragment
+        searchFragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH) as SearchFragment
 
         activeFragment =
             when (tag) {
                 TAG_WATCHLIST -> watchlistFragment
                 TAG_TRENDING -> trendingFragment
-                // TAG_SEARCH -> searchFragment
+                TAG_SEARCH -> searchFragment
                 else -> {
                     filmsFragment
                 }
