@@ -13,12 +13,13 @@ import io.keepcoding.filmica.data.FilmsRepo
 import io.keepcoding.filmica.view.films.FilmsAdapter
 import io.keepcoding.filmica.view.films.FilmsFragment
 import io.keepcoding.filmica.view.util.GridOffsetDecoration
+import io.keepcoding.filmica.view.util.OnClickLister
 import kotlinx.android.synthetic.main.fragment_films.*
 import kotlinx.android.synthetic.main.layout_error.*
 
 class TrendsFragment : Fragment() {
 
-    lateinit var listener: OnTrendClickLister
+    lateinit var listener: OnClickLister
 
     val list: RecyclerView by lazy {
         listFilms.addItemDecoration(GridOffsetDecoration())
@@ -33,11 +34,11 @@ class TrendsFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if (context is OnTrendClickLister) {
+        if (context is OnClickLister) {
             listener = context
         } else {
             throw IllegalArgumentException("The attached activity isn't implementing " +
-                    "${OnTrendClickLister::class.java.canonicalName}")
+                    "${OnClickLister::class.java.canonicalName}")
         }
     }
 
@@ -92,9 +93,9 @@ class TrendsFragment : Fragment() {
         list.visibility = View.INVISIBLE
     }
 
-    interface OnTrendClickLister {
+/*    interface OnTrendClickLister {
         fun onClick(film: Film)
-    }
+    }*/
 
 }
 

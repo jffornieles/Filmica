@@ -15,12 +15,13 @@ import io.keepcoding.filmica.R
 import io.keepcoding.filmica.data.Film
 import io.keepcoding.filmica.data.FilmsRepo
 import io.keepcoding.filmica.view.util.BaseFilmHolder
+import io.keepcoding.filmica.view.util.OnClickLister
 import io.keepcoding.filmica.view.util.SwipeToDeleteCallback
 import kotlinx.android.synthetic.main.fragment_watchlist.*
 
 class WatchlistFragment : Fragment() {
 
-    lateinit var listener: OnWatchlistClickLister
+    lateinit var listener: OnClickLister
 
     val adapter = WatchListAdapter {
         //showDetail(it)
@@ -33,11 +34,11 @@ class WatchlistFragment : Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
-        if (context is OnWatchlistClickLister) {
+        if (context is OnClickLister) {
             listener = context
         } else {
             throw IllegalArgumentException("The attached activity isn't implementing " +
-                    "${OnWatchlistClickLister::class.java.canonicalName}")
+                    "${OnClickLister::class.java.canonicalName}")
         }
     }
     override fun onCreateView(
@@ -97,9 +98,9 @@ class WatchlistFragment : Fragment() {
         }
     }
 
-    interface OnWatchlistClickLister {
+/*    interface OnWatchlistClickLister {
         fun onClick(film: Film)
-    }
+    }*/
 
 
 }
