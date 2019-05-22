@@ -1,6 +1,7 @@
 package io.keepcoding.filmica.view.watchlist
 
 
+import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -19,13 +20,26 @@ import kotlinx.android.synthetic.main.fragment_watchlist.*
 
 class WatchlistFragment : Fragment() {
 
-    val adapter: WatchListAdapter = WatchListAdapter {
-        showDetail(it)
+    lateinit var listener: OnWatchlistClickLister
+
+    val adapter = WatchListAdapter {
+        //showDetail(it)
+        listener.onClick(it)
     }
 
-    private fun showDetail(film: Film) {
-    }
+/*    private fun showDetail(film: Film) {
+    }*/
 
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        if (context is OnWatchlistClickLister) {
+            listener = context
+        } else {
+            throw IllegalArgumentException("The attached activity isn't implementing " +
+                    "${OnWatchlistClickLister::class.java.canonicalName}")
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -81,6 +95,10 @@ class WatchlistFragment : Fragment() {
         FilmsRepo.getFilms(context!!) {
             adapter.setFilms(it)
         }
+    }
+
+    interface OnWatchlistClickLister {
+        fun onClick(film: Film)
     }
 
 

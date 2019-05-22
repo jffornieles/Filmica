@@ -21,7 +21,7 @@ const val TAG_TRENDING = "trending"
 const val TAG_SEARCH = "search"
 
 class FilmsActivity : AppCompatActivity(),
-    FilmsFragment.OnFilmClickLister, TrendsFragment.OnTrendClickLister {
+    FilmsFragment.OnFilmClickLister, TrendsFragment.OnTrendClickLister, WatchlistFragment.OnWatchlistClickLister {
 
     private lateinit var filmsFragment: FilmsFragment
     private lateinit var watchlistFragment: WatchlistFragment
