@@ -65,7 +65,7 @@ class WatchlistFragment : Fragment() {
     private fun undoDelete(film: Film, position: Int) {
         FilmsRepo.saveFilm(context!!, film) {
             FilmsRepo.getFilms(context!!) {
-                adapter.watchlist(film, position)
+                adapter.addToWatchlistPosition(film, position)
                 Snackbar.make(view!!, "Film añadido al watchlist", Snackbar.LENGTH_LONG)
                     .setAction("UNDO", {
                         deleteFilm(film, position)

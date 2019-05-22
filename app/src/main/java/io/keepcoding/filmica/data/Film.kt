@@ -64,7 +64,11 @@ data class Film(
                 genres.add(genre)
             }
 
-            return genres.reduce { acc, genre ->  "$acc | $genre" }
+            if (genresArray.length() > 0) {
+                return genres.reduce { acc, genre -> "$acc | $genre" }
+            } else {
+                return "No genre"
+            }
 
         }
     }

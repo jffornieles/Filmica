@@ -44,7 +44,7 @@ open class BaseFilmAdapter<VH : BaseFilmHolder>(
         notifyItemRemoved(position)
     }
 
-    fun watchlist(film: Film, position: Int) {
+    fun addToWatchlistPosition(film: Film, position: Int) {
         this.list.add(position, film)
         notifyDataSetChanged()
     }

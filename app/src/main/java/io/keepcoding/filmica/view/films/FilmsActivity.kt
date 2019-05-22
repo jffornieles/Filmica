@@ -9,6 +9,7 @@ import io.keepcoding.filmica.R
 import io.keepcoding.filmica.data.Film
 import io.keepcoding.filmica.view.detail.DetailActivity
 import io.keepcoding.filmica.view.detail.DetailFragment
+import io.keepcoding.filmica.view.detail.DetailsPlaceholderFragment
 import io.keepcoding.filmica.view.search.SearchFragment
 import io.keepcoding.filmica.view.trending.TrendsFragment
 import io.keepcoding.filmica.view.watchlist.WatchlistFragment
@@ -73,6 +74,19 @@ class FilmsActivity : AppCompatActivity(),
             .hide(watchlistFragment)
             .hide(searchFragment)
             .commit()
+
+        putPlaceholder()
+    }
+
+    private fun putPlaceholder() {
+        if (isDetailDetailViewAvailable()) {
+            supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.container_detail,
+                    DetailsPlaceholderFragment()
+                )
+                .commit()
+        }
     }
 
     private fun restoreFragments(tag: String) {
@@ -99,6 +113,8 @@ class FilmsActivity : AppCompatActivity(),
             .commit()
 
         activeFragment = fragment
+
+        putPlaceholder()
     }
 
     override fun onClick(film: Film) {
