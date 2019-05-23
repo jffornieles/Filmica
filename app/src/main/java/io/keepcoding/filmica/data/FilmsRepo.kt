@@ -133,6 +133,80 @@ object FilmsRepo {
             .add(request)
     }
 
+    fun searchFilms(
+        context: Context,
+        query: String,
+        callbackSuccess: ((List<Film>) -> Unit),
+        callbackError: ((VolleyError) -> Unit)
+    ) {
+        if (films.isEmpty()) {
+            requestSearchFilms(callbackSuccess, callbackError, context, query)
+        } else {
+            callbackSuccess.invoke(films)
+        }
+    }
+
+    private fun requestSearchFilms(
+        callbackSuccess: (List<Film>) -> Unit,
+        callbackError: (VolleyError) -> Unit,
+        context: Context,
+        query: String
+    ) {
+        val url = ApiRoutes.searchUrl(query)
+        val request = JsonObjectRequest(Request.Method.GET, url, null,
+            { response ->
+                val newFilms = Film.parseFilms(response.getJSONArray("results"))
+                addNewFilm(newFilms)
+                callbackSuccess.invoke(newFilms)
+            },
+            { error ->
+                callbackError.invoke(error)
+            })
+
+        Volley.newRequestQueue(context)
+            .add(request)
+    }
+
+    fun addNewFilm(newFilms: List<Film>) {
+        newFilms.map {film ->
+            if (!films.contains(film)) {
+                films.add(film)
+            }
+        }
+    }
+
+
+ /*   fun searchFilms(
+        context: Context,
+        query: String,
+        onResponse: (List<Film>) -> Unit,
+        onError: (VolleyError) -> Unit
+    ) {
+        val url = ApiRoutes.searchUrl(query)
+
+        if (films.isEmpty()) {
+
+            val request = JsonObjectRequest(Request.Method.GET, url, null,
+                { response ->
+                    val films = Film.parseFilms(response.getJSONArray("results"))
+                    FilmsRepo.films.clear()
+                    FilmsRepo.films.addAll(films)
+                    onResponse.invoke(FilmsRepo.films)
+                },
+                { error ->
+                    error.printStackTrace()
+                    onError.invoke(error)
+                })
+
+            Volley.newRequestQueue(context)
+                .add(request)
+        } else {
+            onResponse.invoke(films)
+        }
+
+    }*/
+
+
 
     private fun dummyFilms(): MutableList<Film> {
         return (1..10).map { i: Int ->

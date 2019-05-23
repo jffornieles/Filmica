@@ -94,11 +94,9 @@ class DetailFragment : Fragment() {
     private fun addToWatchlist() {
         film?.let {
             FilmsRepo.saveFilm(context!!, it) {
-                FilmsRepo.getFilms(context!!) {
                     Snackbar.make(view!!, "Añadido al watchlist", Snackbar.LENGTH_LONG)
                         .setAction("UNDO", { deleteToWatchlist() })
                         .show()
-                }
             }
         }
     }
@@ -106,8 +104,7 @@ class DetailFragment : Fragment() {
     private fun deleteToWatchlist() {
         film?.let {
             FilmsRepo.deleteFilm(context!!, it) {
-                Snackbar.make(view!!, "Borrado de watchlist", Snackbar.LENGTH_LONG)
-                    .setAction("UNDO", { addToWatchlist() })
+                Snackbar.make(view!!, "Borrado de watchlist", Snackbar.LENGTH_SHORT)
                     .show()
             }
         }

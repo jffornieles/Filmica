@@ -24,12 +24,8 @@ class WatchlistFragment : Fragment() {
     lateinit var listener: OnClickLister
 
     val adapter = WatchListAdapter {
-        //showDetail(it)
         listener.onClick(it)
     }
-
-/*    private fun showDetail(film: Film) {
-    }*/
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -81,11 +77,8 @@ class WatchlistFragment : Fragment() {
         FilmsRepo.saveFilm(context!!, film) {
             FilmsRepo.getFilms(context!!) {
                 adapter.addToWatchlistPosition(film, position)
-                Snackbar.make(view!!, "Film añadido al watchlist", Snackbar.LENGTH_LONG)
-                    .setAction("UNDO", {
-                        deleteFilm(film, position)
-                    }
-                    ).show()
+                Snackbar.make(view!!, "Film añadido al watchlist", Snackbar.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -97,10 +90,6 @@ class WatchlistFragment : Fragment() {
             adapter.setFilms(it)
         }
     }
-
-/*    interface OnWatchlistClickLister {
-        fun onClick(film: Film)
-    }*/
 
 
 }

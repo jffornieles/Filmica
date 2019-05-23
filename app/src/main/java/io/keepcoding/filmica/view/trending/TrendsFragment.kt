@@ -93,10 +93,6 @@ class TrendsFragment : Fragment() {
         list.visibility = View.INVISIBLE
     }
 
-/*    interface OnTrendClickLister {
-        fun onClick(film: Film)
-    }*/
-
 }
 
 

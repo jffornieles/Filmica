@@ -3,25 +3,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
-    tools:context=".view.search.SearchFragment">
+    android:orientation="vertical">
 
     <EditText
-        android:id="@+id/editSearch"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+        android:id="@+id/textSearch"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="1"
+        android:backgroundTint="@color/colorPrimary"
         android:maxLength="25"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        tools:targetApi="o"
         android:hint="Search Films"/>
 
-    <Button
-        android:id="@+id/buttonSearch"
-        android:layout_width="46dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_alignBaseline="@+id/editSearch"
-        android:drawableStart="@drawable/ic_search"
-        android:drawableLeft="@drawable/ic_search" />
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="invisible"/>
+
+        <include
+            layout="@layout/layout_error"/>
+
+        <include
+            layout="@layout/layout_noresult"></include>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            app:layoutManager="android.support.v7.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/item_search"/>
+
+    </FrameLayout>
 
 </LinearLayout>

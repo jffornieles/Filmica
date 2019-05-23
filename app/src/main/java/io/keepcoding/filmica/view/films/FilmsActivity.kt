@@ -9,7 +9,7 @@ import io.keepcoding.filmica.R
 import io.keepcoding.filmica.data.Film
 import io.keepcoding.filmica.view.detail.DetailActivity
 import io.keepcoding.filmica.view.detail.DetailFragment
-import io.keepcoding.filmica.view.detail.DetailsPlaceholderFragment
+import io.keepcoding.filmica.view.detail.DetailPlaceholderFragment
 import io.keepcoding.filmica.view.search.SearchFragment
 import io.keepcoding.filmica.view.trending.TrendsFragment
 import io.keepcoding.filmica.view.util.OnClickLister
@@ -21,8 +21,7 @@ const val TAG_WATCHLIST = "watchlist"
 const val TAG_TRENDING = "trending"
 const val TAG_SEARCH = "search"
 
-class FilmsActivity : AppCompatActivity(),
-    FilmsFragment.OnFilmClickLister, OnClickLister {
+class FilmsActivity : AppCompatActivity(), OnClickLister {
 
     private lateinit var filmsFragment: FilmsFragment
     private lateinit var watchlistFragment: WatchlistFragment
@@ -79,17 +78,6 @@ class FilmsActivity : AppCompatActivity(),
         putPlaceholder()
     }
 
-    private fun putPlaceholder() {
-        if (isDetailDetailViewAvailable()) {
-            supportFragmentManager.beginTransaction()
-                .replace(
-                    R.id.container_detail,
-                    DetailsPlaceholderFragment()
-                )
-                .commit()
-        }
-    }
-
     private fun restoreFragments(tag: String) {
         filmsFragment = supportFragmentManager.findFragmentByTag(TAG_FILM) as FilmsFragment
         watchlistFragment = supportFragmentManager.findFragmentByTag(TAG_WATCHLIST) as WatchlistFragment
@@ -105,6 +93,7 @@ class FilmsActivity : AppCompatActivity(),
                     filmsFragment
                 }
             }
+
     }
 
     private fun showMainFragment(fragment: Fragment) {
@@ -133,6 +122,18 @@ class FilmsActivity : AppCompatActivity(),
         }
     }
 
+    private fun putPlaceholder() {
+        if (isDetailDetailViewAvailable()) {
+            supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.container_detail,
+                    DetailPlaceholderFragment()
+                )
+                .commit()
+        }
+    }
+
     private fun isDetailDetailViewAvailable() =
         findViewById<FrameLayout>(R.id.container_detail) != null
+
 }
