@@ -1,5 +1,11 @@
 package io.keepcoding.filmica.data
 
+
+const val TAG_FILM = "films"
+const val TAG_WATCHLIST = "watchlist"
+const val TAG_TRENDING = "trending"
+const val TAG_SEARCH = "search"
+
 object ApiConstants {
     val genres: Map<Int, String> = mapOf(
         28 to "Action",

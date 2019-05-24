@@ -28,18 +28,13 @@ class SearchFragment : Fragment() {
     private var searching: Boolean = false
 
     val list: RecyclerView by lazy {
-        val instance = view!!.findViewById<RecyclerView>(R.id.list_search)
-        instance.addItemDecoration(GridOffsetDecoration())
-        instance.setHasFixedSize(true)
-        return@lazy instance
+        listSearch.addItemDecoration(GridOffsetDecoration())
+        listSearch.setHasFixedSize(true)
+        return@lazy listSearch
     }
 
-    val adapter: SearchAdapter by lazy {
-        val instance = SearchAdapter { film ->
-            this.listener.onClick(film)
-        }
-
-        instance
+    val adapter = SearchAdapter {
+            listener.onClick(it)
     }
 
     override fun onAttach(context: Context?) {

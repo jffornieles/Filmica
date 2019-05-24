@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.widget.FrameLayout
 import io.keepcoding.filmica.R
-import io.keepcoding.filmica.data.Film
+import io.keepcoding.filmica.data.*
 import io.keepcoding.filmica.view.detail.DetailActivity
 import io.keepcoding.filmica.view.detail.DetailFragment
 import io.keepcoding.filmica.view.detail.DetailPlaceholderFragment
@@ -16,10 +16,7 @@ import io.keepcoding.filmica.view.util.OnClickLister
 import io.keepcoding.filmica.view.watchlist.WatchlistFragment
 import kotlinx.android.synthetic.main.activity_films.*
 
-const val TAG_FILM = "films"
-const val TAG_WATCHLIST = "watchlist"
-const val TAG_TRENDING = "trending"
-const val TAG_SEARCH = "search"
+
 
 class FilmsActivity : AppCompatActivity(), OnClickLister {
 
@@ -109,14 +106,16 @@ class FilmsActivity : AppCompatActivity(), OnClickLister {
 
     override fun onClick(film: Film) {
         if (!isDetailDetailViewAvailable()) {
+
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("id", film.id)
+            intent.putExtra("active", activeFragment.tag)
             startActivity(intent)
         } else {
             supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.container_detail,
-                    DetailFragment.newInstance(film.id)
+                    DetailFragment.newInstance(film.id, activeFragment.tag!!)
                 )
                 .commit()
         }

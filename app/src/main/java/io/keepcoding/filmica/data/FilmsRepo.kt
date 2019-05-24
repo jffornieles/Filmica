@@ -6,6 +6,7 @@ import com.android.volley.Request
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import io.keepcoding.filmica.view.watchlist.WatchlistFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -14,6 +15,9 @@ import kotlinx.coroutines.launch
 object FilmsRepo {
 
     private val films: MutableList<Film> = mutableListOf()
+    private val trendsFilms: MutableList<Film> = mutableListOf()
+    private val searchFilms: MutableList<Film> = mutableListOf()
+    private var activeFragmentFilm: MutableList<Film> = mutableListOf()
 
     @Volatile
     private var db: FilmDatabase? = null
@@ -30,10 +34,19 @@ object FilmsRepo {
         return db as FilmDatabase
     }
 
-    fun findFilmById(id: String): Film? {
-        return films.find {
+    fun findFilmById(id: String, activeFragment: String): Film? {
+
+        when (activeFragment) {
+            TAG_WATCHLIST -> activeFragmentFilm = films
+            TAG_TRENDING -> activeFragmentFilm = trendsFilms
+            TAG_SEARCH -> activeFragmentFilm = searchFilms
+            TAG_FILM -> activeFragmentFilm = films
+        }
+
+        return activeFragmentFilm.find {
             return@find it.id == id
         }
+
 
     }
 
@@ -44,9 +57,9 @@ object FilmsRepo {
     ) {
         GlobalScope.launch(Dispatchers.Main) {
             val async = async(Dispatchers.IO) {
-            val db = getDbInstance(context)
-            db.filmDao().insertFilm(film)
-        }
+                val db = getDbInstance(context)
+                db.filmDao().insertFilm(film)
+            }
 
             async.await()
             callback.invoke(film)
@@ -117,11 +130,10 @@ object FilmsRepo {
         val url = ApiRoutes.trendingMoviesUrl()
         val request = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
-                val films =
-                    Film.parseFilms(response.getJSONArray("results"))
-                FilmsRepo.films.clear()
-                FilmsRepo.films.addAll(films)
-                onResponse.invoke(FilmsRepo.films)
+                val films = Film.parseFilms(response.getJSONArray("results"))
+                FilmsRepo.trendsFilms.clear()
+                FilmsRepo.trendsFilms.addAll(films)
+                onResponse.invoke(trendsFilms)
             },
             { error ->
                 error.printStackTrace()
@@ -136,76 +148,26 @@ object FilmsRepo {
     fun searchFilms(
         context: Context,
         query: String,
-        callbackSuccess: ((List<Film>) -> Unit),
-        callbackError: ((VolleyError) -> Unit)
-    ) {
-        if (films.isEmpty()) {
-            requestSearchFilms(callbackSuccess, callbackError, context, query)
-        } else {
-            callbackSuccess.invoke(films)
-        }
-    }
-
-    private fun requestSearchFilms(
-        callbackSuccess: (List<Film>) -> Unit,
-        callbackError: (VolleyError) -> Unit,
-        context: Context,
-        query: String
-    ) {
-        val url = ApiRoutes.searchUrl(query)
-        val request = JsonObjectRequest(Request.Method.GET, url, null,
-            { response ->
-                val newFilms = Film.parseFilms(response.getJSONArray("results"))
-                addNewFilm(newFilms)
-                callbackSuccess.invoke(newFilms)
-            },
-            { error ->
-                callbackError.invoke(error)
-            })
-
-        Volley.newRequestQueue(context)
-            .add(request)
-    }
-
-    fun addNewFilm(newFilms: List<Film>) {
-        newFilms.map {film ->
-            if (!films.contains(film)) {
-                films.add(film)
-            }
-        }
-    }
-
-
- /*   fun searchFilms(
-        context: Context,
-        query: String,
         onResponse: (List<Film>) -> Unit,
         onError: (VolleyError) -> Unit
     ) {
         val url = ApiRoutes.searchUrl(query)
 
-        if (films.isEmpty()) {
+        val request = JsonObjectRequest(Request.Method.GET, url, null,
+            { response ->
+                val films = Film.parseFilms(response.getJSONArray("results"))
+                FilmsRepo.searchFilms.clear()
+                FilmsRepo.searchFilms.addAll(films)
+                onResponse.invoke(searchFilms)
+            },
+            { error ->
+                error.printStackTrace()
+                onError.invoke(error)
+            })
 
-            val request = JsonObjectRequest(Request.Method.GET, url, null,
-                { response ->
-                    val films = Film.parseFilms(response.getJSONArray("results"))
-                    FilmsRepo.films.clear()
-                    FilmsRepo.films.addAll(films)
-                    onResponse.invoke(FilmsRepo.films)
-                },
-                { error ->
-                    error.printStackTrace()
-                    onError.invoke(error)
-                })
-
-            Volley.newRequestQueue(context)
-                .add(request)
-        } else {
-            onResponse.invoke(films)
-        }
-
-    }*/
-
+        Volley.newRequestQueue(context)
+            .add(request)
+    }
 
 
     private fun dummyFilms(): MutableList<Film> {
