@@ -19,6 +19,8 @@ object FilmsRepo {
     private val searchFilms: MutableList<Film> = mutableListOf()
     private var activeFragmentFilm: MutableList<Film> = mutableListOf()
 
+    private var totalPagesTrendingFilms: Int = 0
+
     @Volatile
     private var db: FilmDatabase? = null
 
@@ -106,8 +108,7 @@ object FilmsRepo {
         val url = ApiRoutes.discoverMoviesUrl()
         val request = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
-                val films =
-                    Film.parseFilms(response.getJSONArray("results"))
+                val films = Film.parseFilms(response.getJSONArray("results"))
                 FilmsRepo.films.clear()
                 FilmsRepo.films.addAll(films)
                 onResponse.invoke(FilmsRepo.films)
@@ -124,16 +125,35 @@ object FilmsRepo {
 
     fun trendingFilms(
         context: Context,
-        onResponse: (List<Film>) -> Unit,
+        page: Int,
+        onResponse: (List<Film>, totalPages: Int) -> Unit,
         onError: (VolleyError) -> Unit
     ) {
-        val url = ApiRoutes.trendingMoviesUrl()
+        if (trendsFilms.isEmpty()) {
+            requestTrendingFilms(page, onResponse, onError, context)
+        } else if (page > 1) {
+            requestTrendingFilms(page, onResponse, onError, context)
+        } else {
+            onResponse.invoke(trendsFilms, totalPagesTrendingFilms)
+        }
+
+        requestTrendingFilms(page, onResponse, onError, context)
+    }
+
+    private fun requestTrendingFilms(
+        page: Int,
+        onResponse: (List<Film>, totalPages: Int) -> Unit,
+        onError: (VolleyError) -> Unit,
+        context: Context
+    ) {
+        val url = ApiRoutes.trendingMoviesUrl(page = page)
         val request = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
                 val films = Film.parseFilms(response.getJSONArray("results"))
-                FilmsRepo.trendsFilms.clear()
-                FilmsRepo.trendsFilms.addAll(films)
-                onResponse.invoke(trendsFilms)
+                trendsFilms.clear()
+                trendsFilms.addAll(films)
+                totalPagesTrendingFilms = response.optInt("total_pages", 0)
+                onResponse.invoke(trendsFilms, totalPagesTrendingFilms)
             },
             { error ->
                 error.printStackTrace()
@@ -157,7 +177,11 @@ object FilmsRepo {
             { response ->
                 val films = Film.parseFilms(response.getJSONArray("results"))
                 FilmsRepo.searchFilms.clear()
-                FilmsRepo.searchFilms.addAll(films)
+                if (films.size > 0) {
+                    (0..10).map {
+                        FilmsRepo.searchFilms.add(films[it])
+                    }
+                }
                 onResponse.invoke(searchFilms)
             },
             { error ->
@@ -169,17 +193,4 @@ object FilmsRepo {
             .add(request)
     }
 
-
-    private fun dummyFilms(): MutableList<Film> {
-        return (1..10).map { i: Int ->
-            return@map Film(
-                id = "${i}",
-                title = "Film ${i}",
-                overview = "Overview ${i}",
-                genre = "Genre ${i}",
-                rating = i.toFloat(),
-                date = "2019-05-${i}"
-            )
-        }.toMutableList()
-    }
 }

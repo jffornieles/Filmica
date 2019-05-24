@@ -44,6 +44,11 @@ open class BaseFilmAdapter<VH : BaseFilmHolder>(
         notifyItemRemoved(position)
     }
 
+    fun updateFilms(films: List<Film>) {
+        list.addAll(films)
+        notifyItemRangeInserted(list.size, films.size)
+    }
+
     fun addToWatchlistPosition(film: Film, position: Int) {
         this.list.add(position, film)
         notifyDataSetChanged()

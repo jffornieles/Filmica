@@ -12,6 +12,7 @@ import io.keepcoding.filmica.data.Film
 import io.keepcoding.filmica.data.FilmsRepo
 import io.keepcoding.filmica.view.films.FilmsAdapter
 import io.keepcoding.filmica.view.films.FilmsFragment
+import io.keepcoding.filmica.view.util.EndlessScrollListener
 import io.keepcoding.filmica.view.util.GridOffsetDecoration
 import io.keepcoding.filmica.view.util.OnClickLister
 import kotlinx.android.synthetic.main.fragment_films.*
@@ -20,6 +21,9 @@ import kotlinx.android.synthetic.main.layout_error.*
 class TrendsFragment : Fragment() {
 
     lateinit var listener: OnClickLister
+
+    private var lastLoadPage: Int = 1
+    private var totalPages: Int? =  null
 
     val list: RecyclerView by lazy {
         listFilms.addItemDecoration(GridOffsetDecoration())
@@ -54,6 +58,21 @@ class TrendsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         list.adapter = adapter
+
+        list.addOnScrollListener(object : EndlessScrollListener(list.layoutManager!!) {
+            override fun onLoadMore(currentPage: Int, totalItemCount: Int) {
+                if (totalItemCount > 1) {
+                    lastLoadPage += 1
+                    totalPages?.let {
+                        if (it > lastLoadPage) filmsProgress.visibility = View.VISIBLE
+                        if (it >= lastLoadPage) reload(lastLoadPage)
+                    }
+                }
+            }
+
+            override fun onScroll(firstVisibleItem: Int, dy: Int, scrollPosition: Int) { }
+        })
+
         buttonRetry.setOnClickListener { reload() }
     }
 
@@ -62,16 +81,21 @@ class TrendsFragment : Fragment() {
         reload()
     }
 
-    private fun reload() {
+    private fun reload(page: Int = 1) {
         showProgress()
 
-        FilmsRepo.trendingFilms(context!!,
-            { films ->
-                adapter.setFilms(films)
+        FilmsRepo.trendingFilms(
+            context!!,
+            page,
+            { films, totalPages ->
+                if (this.totalPages == null) this.totalPages = totalPages
+                if (page == 1) adapter.setFilms(films) else adapter.updateFilms(films)
                 showList()
+
 
             }, { errorRequest ->
                 showError()
+                errorRequest.printStackTrace()
             })
     }
 
