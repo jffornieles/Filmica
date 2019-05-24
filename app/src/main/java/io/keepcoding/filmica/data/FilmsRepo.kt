@@ -20,6 +20,7 @@ object FilmsRepo {
     private var activeFragmentFilm: MutableList<Film> = mutableListOf()
 
     private var totalPagesTrendingFilms: Int = 0
+    private var totalPagesDiscoverFilms: Int = 0
 
     @Volatile
     private var db: FilmDatabase? = null
@@ -102,16 +103,36 @@ object FilmsRepo {
 
     fun discoverFilms(
         context: Context,
-        onResponse: (List<Film>) -> Unit,
+        page: Int,
+        onResponse: (List<Film>, totalPages: Int) -> Unit,
         onError: (VolleyError) -> Unit
     ) {
-        val url = ApiRoutes.discoverMoviesUrl()
+
+        if (films.isEmpty()) {
+            requestDiscoverFilms(page, onResponse, onError, context)
+        } else if (page > 1) {
+            requestDiscoverFilms(page, onResponse, onError, context)
+        } else {
+            onResponse.invoke(films, totalPagesDiscoverFilms)
+        }
+
+        requestDiscoverFilms(page, onResponse, onError, context)
+    }
+
+    private fun requestDiscoverFilms(
+        page: Int,
+        onResponse: (List<Film>, totalPages: Int) -> Unit,
+        onError: (VolleyError) -> Unit,
+        context: Context
+    ) {
+        val url = ApiRoutes.discoverMoviesUrl(page = page)
         val request = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
                 val films = Film.parseFilms(response.getJSONArray("results"))
                 FilmsRepo.films.clear()
                 FilmsRepo.films.addAll(films)
-                onResponse.invoke(FilmsRepo.films)
+                totalPagesDiscoverFilms = response.optInt("total_pages", 0)
+                onResponse.invoke(FilmsRepo.films, totalPagesDiscoverFilms)
             },
             { error ->
                 error.printStackTrace()
@@ -178,7 +199,7 @@ object FilmsRepo {
                 val films = Film.parseFilms(response.getJSONArray("results"))
                 FilmsRepo.searchFilms.clear()
                 if (films.size > 0) {
-                    (0..10).map {
+                    (0..9).map {
                         FilmsRepo.searchFilms.add(films[it])
                     }
                 }
