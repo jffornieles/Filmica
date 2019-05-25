@@ -94,6 +94,14 @@ class FilmsActivity : AppCompatActivity(), OnClickLister {
     }
 
     private fun showMainFragment(fragment: Fragment) {
+
+        if (fragment.tag == "watchlist") {
+            supportFragmentManager.beginTransaction()
+                .detach(fragment)
+                .attach(fragment)
+                .commit()
+        }
+
         supportFragmentManager.beginTransaction()
             .hide(activeFragment)
             .show(fragment)
