@@ -15,6 +15,7 @@ import io.keepcoding.filmica.R
 import io.keepcoding.filmica.data.Film
 import io.keepcoding.filmica.data.FilmsRepo
 import io.keepcoding.filmica.view.util.SimpleTarget
+import io.keepcoding.filmica.view.watchlist.WatchListAdapter
 import kotlinx.android.synthetic.main.fragment_detail.*
 
 class DetailFragment : Fragment() {
@@ -52,7 +53,7 @@ class DetailFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.action_share) {
+        if (item.itemId == R.id.action_share) {
             shareFilm()
         }
 
@@ -97,9 +98,9 @@ class DetailFragment : Fragment() {
     private fun addToWatchlist() {
         film?.let {
             FilmsRepo.saveFilm(context!!, it) {
-                    Snackbar.make(view!!, "Añadido al watchlist", Snackbar.LENGTH_LONG)
-                        .setAction("UNDO", { deleteToWatchlist() })
-                        .show()
+                Snackbar.make(view!!, "Añadido al watchlist", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO", { deleteToWatchlist() })
+                    .show()
             }
         }
     }

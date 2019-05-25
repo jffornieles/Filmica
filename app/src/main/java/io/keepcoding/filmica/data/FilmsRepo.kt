@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 object FilmsRepo {
 
     private val films: MutableList<Film> = mutableListOf()
+    private val watchlistFilms: MutableList<Film> = mutableListOf()
     private val trendsFilms: MutableList<Film> = mutableListOf()
     private val searchFilms: MutableList<Film> = mutableListOf()
     private var activeFragmentFilm: MutableList<Film> = mutableListOf()
@@ -40,7 +41,7 @@ object FilmsRepo {
     fun findFilmById(id: String, activeFragment: String): Film? {
 
         when (activeFragment) {
-            TAG_WATCHLIST -> activeFragmentFilm = films
+            TAG_WATCHLIST -> activeFragmentFilm = watchlistFilms
             TAG_TRENDING -> activeFragmentFilm = trendsFilms
             TAG_SEARCH -> activeFragmentFilm = searchFilms
             TAG_FILM -> activeFragmentFilm = films
@@ -81,6 +82,7 @@ object FilmsRepo {
             }
 
             val films = async.await()
+            watchlistFilms.addAll(films)
             callback.invoke(films)
         }
     }
@@ -108,9 +110,7 @@ object FilmsRepo {
         onError: (VolleyError) -> Unit
     ) {
 
-        if (films.isEmpty()) {
-            requestDiscoverFilms(page, onResponse, onError, context)
-        } else if (page > 1) {
+        if (films.isEmpty() || (page > 1)) {
             requestDiscoverFilms(page, onResponse, onError, context)
         } else {
             onResponse.invoke(films, totalPagesDiscoverFilms)
@@ -150,9 +150,7 @@ object FilmsRepo {
         onResponse: (List<Film>, totalPages: Int) -> Unit,
         onError: (VolleyError) -> Unit
     ) {
-        if (trendsFilms.isEmpty()) {
-            requestTrendingFilms(page, onResponse, onError, context)
-        } else if (page > 1) {
+        if (trendsFilms.isEmpty() || (page > 1)) {
             requestTrendingFilms(page, onResponse, onError, context)
         } else {
             onResponse.invoke(trendsFilms, totalPagesTrendingFilms)
